@@ -14,12 +14,12 @@ import (
 )
 
 type notifyRequest struct {
-	Text      string           `json:"text" validate:"required"`
-	Title     *string          `json:"title" validate:"omitempty"`
-	Level     *telegram.Level  `json:"level" validate:"omitempty"`
-	Source    *string          `json:"source" validate:"omitempty"`
-	Links     []telegram.Link  `json:"links" validate:"omitempty,dive"`
-	Timestamp *time.Time       `json:"timestamp" validate:"omitempty"`
+	Text      string          `json:"text" validate:"required"`
+	Title     *string         `json:"title" validate:"omitempty"`
+	Level     *telegram.Level `json:"level" validate:"omitempty"`
+	Source    *string         `json:"source" validate:"omitempty"`
+	Links     []telegram.Link `json:"links" validate:"omitempty,dive"`
+	Timestamp *time.Time      `json:"timestamp" validate:"omitempty"`
 }
 
 type notifyResponse struct {

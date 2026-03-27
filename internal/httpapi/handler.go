@@ -59,18 +59,26 @@ func (h *Handler) Router() http.Handler {
 	r.Use(middleware.Compress(5))
 
 	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: &log.Logger, NoColor: true}))
-	// auth must be registered before any routes (chi requirement)
-	r.Use(authMiddleware(h.cfg.AdminToken))
 
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Post("/webhooks/vk", h.vkWebhook)
-		r.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
-			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
-			_, _ = w.Write([]byte("ok"))
+		// Public webhooks (VK can't send custom auth headers)
+		r.Route("/webhooks", func(r chi.Router) {
+			r.Post("/vk", h.vkWebhook)
 		})
 
-		r.Post("/notify", h.notify)
+		// Protected endpoints
+		r.Group(func(r chi.Router) {
+			r.Use(authMiddleware(h.cfg.AdminToken))
+
+			r.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte("ok"))
+			})
+
+			r.Post("/notify", h.notify)
+		})
+
 	})
 
 	return r

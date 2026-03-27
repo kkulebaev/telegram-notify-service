@@ -17,18 +17,18 @@ Tiny HTTP service (Go) to send notifications to Telegram.
 
 ## Features
 
-- `POST /notify` — sends a formatted Telegram message (HTML + emoji)
-- `GET /healthz` — healthcheck endpoint
+- `POST /api/v1/notify` — sends a formatted Telegram message (HTML + emoji)
+- `GET /api/v1/healthz` — healthcheck endpoint
 - `ADMIN_TOKEN` protection (Bearer token / `X-Admin-Token`)
 - Docker-friendly (distroless runtime image)
 
 ## Endpoints
 
-### `GET /healthz`
+### `GET /api/v1/healthz`
 
 Returns `200 ok`.
 
-### `POST /notify`
+### `POST /api/v1/notify`
 
 Sends message to Telegram using `parse_mode=HTML`.
 
@@ -78,7 +78,7 @@ go run ./cmd/server
 Test request:
 
 ```bash
-curl -X POST https://telegram-notify-service-production.up.railway.app/notify \
+curl -X POST https://telegram-notify-service-production.up.railway.app/api/v1/notify \
   -H 'content-type: application/json' \
   -H 'authorization: Bearer <ADMIN_TOKEN>' \
   -d '{
@@ -104,5 +104,5 @@ docker run --rm -p 8080:8080 \
 
 ## Notes
 
-- Telegram message delivery is synchronous: `POST /notify` returns error if Telegram API responds with an error.
+- Telegram message delivery is synchronous: `POST /api/v1/notify` returns error if Telegram API responds with an error.
 - For production, consider adding rate limiting and deduplication depending on your alert sources.

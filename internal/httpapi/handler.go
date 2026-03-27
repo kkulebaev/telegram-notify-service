@@ -43,13 +43,15 @@ func (h *Handler) Router() http.Handler {
 	// auth must be registered before any routes (chi requirement)
 	r.Use(authMiddleware(h.cfg.AdminToken))
 
-	r.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("ok"))
-	})
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
+			w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte("ok"))
+		})
 
-	r.Post("/notify", h.notify)
+		r.Post("/notify", h.notify)
+	})
 
 	return r
 }

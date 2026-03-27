@@ -25,7 +25,7 @@ func TestHealthzRequiresAuth(t *testing.T) {
 	srv := httptest.NewServer(h.Router())
 	defer srv.Close()
 
-	resp, err := http.Get(srv.URL + "/healthz")
+	resp, err := http.Get(srv.URL + "/api/v1/healthz")
 	if err != nil {
 		t.Fatalf("request failed: %v", err)
 	}

@@ -33,7 +33,7 @@ func TestNotifyRequiresAuth(t *testing.T) {
 	defer srv.Close()
 
 	body, _ := json.Marshal(map[string]any{"text": "hello"})
-	resp, err := http.Post(srv.URL+"/notify", "application/json", bytes.NewReader(body))
+	resp, err := http.Post(srv.URL+"/api/v1/notify", "application/json", bytes.NewReader(body))
 	if err != nil {
 		t.Fatalf("request failed: %v", err)
 	}
@@ -67,7 +67,7 @@ func TestNotifySendsMessage(t *testing.T) {
 	}
 	body, _ := json.Marshal(payload)
 
-	req, err := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req, err := http.NewRequest(http.MethodPost, srv.URL+"/api/v1/notify", bytes.NewReader(body))
 	if err != nil {
 		t.Fatalf("new request: %v", err)
 	}
@@ -103,7 +103,7 @@ func TestNotifyRejectsUnknownFields(t *testing.T) {
 	defer srv.Close()
 
 	body, _ := json.Marshal(map[string]any{"text": "hello", "nope": true})
-	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/api/v1/notify", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer secret")
 
@@ -130,7 +130,7 @@ func TestNotifyRejectsEmptyText(t *testing.T) {
 	defer srv.Close()
 
 	body, _ := json.Marshal(map[string]any{"text": ""})
-	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/api/v1/notify", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer secret")
 
@@ -157,7 +157,7 @@ func TestNotifyDefaultsToInfoLevel(t *testing.T) {
 	defer srv.Close()
 
 	body, _ := json.Marshal(map[string]any{"text": "hello", "title": "t"})
-	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/api/v1/notify", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer secret")
 
@@ -187,7 +187,7 @@ func TestNotifyTitleIsTrimmedAndFallsBack(t *testing.T) {
 	defer srv.Close()
 
 	body, _ := json.Marshal(map[string]any{"text": "hello", "title": "   "})
-	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/api/v1/notify", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer secret")
 
@@ -219,7 +219,7 @@ func TestNotifyRendersProvidedTimestampInUTC(t *testing.T) {
 	// 2026-03-27 05:06 UTC
 	ts := "2026-03-27T08:06:00+03:00"
 	body, _ := json.Marshal(map[string]any{"text": "hello", "timestamp": ts})
-	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/api/v1/notify", bytes.NewReader(body))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer secret")
 

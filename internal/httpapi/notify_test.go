@@ -120,3 +120,123 @@ func TestNotifyRejectsUnknownFields(t *testing.T) {
 		t.Fatalf("sender must not be called on bad request")
 	}
 }
+
+func TestNotifyRejectsEmptyText(t *testing.T) {
+	cfg := config.Config{Port: 8080, TelegramBotToken: "x", TelegramChatID: "1", AdminToken: "secret"}
+	sender := &captureSender{}
+
+	h := NewHandlerWithSender(cfg, sender)
+	srv := httptest.NewServer(h.Router())
+	defer srv.Close()
+
+	body, _ := json.Marshal(map[string]any{"text": ""})
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer secret")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusBadRequest {
+		t.Fatalf("expected status %d, got %d", http.StatusBadRequest, resp.StatusCode)
+	}
+	if sender.called {
+		t.Fatalf("sender must not be called on bad request")
+	}
+}
+
+func TestNotifyDefaultsToInfoLevel(t *testing.T) {
+	cfg := config.Config{Port: 8080, TelegramBotToken: "x", TelegramChatID: "1", AdminToken: "secret"}
+	sender := &captureSender{}
+
+	h := NewHandlerWithSender(cfg, sender)
+	srv := httptest.NewServer(h.Router())
+	defer srv.Close()
+
+	body, _ := json.Marshal(map[string]any{"text": "hello", "title": "t"})
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer secret")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, resp.StatusCode)
+	}
+	if !sender.called {
+		t.Fatalf("sender must be called")
+	}
+	if !bytes.Contains([]byte(sender.message), []byte("ℹ️ <b>t</b>")) {
+		t.Fatalf("expected info badge, got: %s", sender.message)
+	}
+}
+
+func TestNotifyTitleIsTrimmedAndFallsBack(t *testing.T) {
+	cfg := config.Config{Port: 8080, TelegramBotToken: "x", TelegramChatID: "1", AdminToken: "secret"}
+	sender := &captureSender{}
+
+	h := NewHandlerWithSender(cfg, sender)
+	srv := httptest.NewServer(h.Router())
+	defer srv.Close()
+
+	body, _ := json.Marshal(map[string]any{"text": "hello", "title": "   "})
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer secret")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, resp.StatusCode)
+	}
+	if !sender.called {
+		t.Fatalf("sender must be called")
+	}
+	if !bytes.Contains([]byte(sender.message), []byte("<b>Notification</b>")) {
+		t.Fatalf("expected title fallback, got: %s", sender.message)
+	}
+}
+
+func TestNotifyRendersProvidedTimestampInUTC(t *testing.T) {
+	cfg := config.Config{Port: 8080, TelegramBotToken: "x", TelegramChatID: "1", AdminToken: "secret"}
+	sender := &captureSender{}
+
+	h := NewHandlerWithSender(cfg, sender)
+	srv := httptest.NewServer(h.Router())
+	defer srv.Close()
+
+	// 2026-03-27 05:06 UTC
+	ts := "2026-03-27T08:06:00+03:00"
+	body, _ := json.Marshal(map[string]any{"text": "hello", "timestamp": ts})
+	req, _ := http.NewRequest(http.MethodPost, srv.URL+"/notify", bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer secret")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, resp.StatusCode)
+	}
+	if !sender.called {
+		t.Fatalf("sender must be called")
+	}
+
+	if !bytes.Contains([]byte(sender.message), []byte("🕒 <i>2026-03-27 05:06 UTC</i>")) {
+		t.Fatalf("expected UTC timestamp, got: %s", sender.message)
+	}
+}

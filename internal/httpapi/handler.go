@@ -14,9 +14,9 @@ import (
 )
 
 type Handler struct {
-	cfg          config.Config
-	sender       telegramapi.Sender
-	httpClient   *http.Client
+	cfg           config.Config
+	sender        telegramapi.Sender
+	httpClient    *http.Client
 	notifyBaseURL string
 }
 
@@ -24,9 +24,9 @@ func NewHandler(cfg config.Config) *Handler {
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	return &Handler{
-		cfg:          cfg,
-		sender:       telegram.NewSender(client, cfg.TelegramBotToken, cfg.TelegramChatID),
-		httpClient:   client,
+		cfg:           cfg,
+		sender:        telegram.NewSender(client, cfg.TelegramBotToken, cfg.TelegramChatID),
+		httpClient:    client,
 		notifyBaseURL: fmt.Sprintf("http://127.0.0.1:%d", cfg.Port),
 	}
 }
@@ -35,9 +35,9 @@ func NewHandlerWithSender(cfg config.Config, sender telegramapi.Sender) *Handler
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	return &Handler{
-		cfg:          cfg,
-		sender:       sender,
-		httpClient:   client,
+		cfg:           cfg,
+		sender:        sender,
+		httpClient:    client,
 		notifyBaseURL: fmt.Sprintf("http://127.0.0.1:%d", cfg.Port),
 	}
 }

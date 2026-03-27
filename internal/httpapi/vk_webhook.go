@@ -19,7 +19,7 @@ type vkWebhookRequest struct {
 	Secret       *string         `json:"secret"`
 	Object       json.RawMessage `json:"object"`
 	EventID      *string         `json:"event_id"`
-	V           *string          `json:"v"`
+	V            *string         `json:"v"`
 	Confirmation *string         `json:"confirmation"`
 }
 

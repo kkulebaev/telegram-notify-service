@@ -13,6 +13,8 @@
 
 Tiny HTTP service (Go) to send notifications to Telegram.
 
+**Production URL:** https://telegram-notify-service-production.up.railway.app
+
 ## Features
 
 - `POST /notify` — sends a formatted Telegram message (HTML + emoji)
@@ -76,7 +78,7 @@ go run ./cmd/server
 Test request:
 
 ```bash
-curl -X POST http://localhost:8080/notify \
+curl -X POST https://telegram-notify-service-production.up.railway.app/notify \
   -H 'content-type: application/json' \
   -H 'authorization: Bearer <ADMIN_TOKEN>' \
   -d '{

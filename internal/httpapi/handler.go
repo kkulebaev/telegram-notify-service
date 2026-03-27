@@ -8,12 +8,13 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/kkulebaev/telegram-notify-service/internal/config"
 	"github.com/kkulebaev/telegram-notify-service/internal/telegram"
+	"github.com/kkulebaev/telegram-notify-service/internal/telegramapi"
 	"github.com/rs/zerolog/log"
 )
 
 type Handler struct {
 	cfg    config.Config
-	sender *telegram.Sender
+	sender telegramapi.Sender
 }
 
 func NewHandler(cfg config.Config) *Handler {
@@ -23,6 +24,10 @@ func NewHandler(cfg config.Config) *Handler {
 		cfg:    cfg,
 		sender: telegram.NewSender(client, cfg.TelegramBotToken, cfg.TelegramChatID),
 	}
+}
+
+func NewHandlerWithSender(cfg config.Config, sender telegramapi.Sender) *Handler {
+	return &Handler{cfg: cfg, sender: sender}
 }
 
 func (h *Handler) Router() http.Handler {

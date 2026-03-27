@@ -34,15 +34,15 @@ func (h *Handler) Router() http.Handler {
 	r.Use(middleware.Timeout(15 * time.Second))
 	r.Use(middleware.Compress(5))
 
+	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: &log.Logger, NoColor: true}))
+	// auth must be registered before any routes (chi requirement)
+	r.Use(authMiddleware(h.cfg.AdminToken))
+
 	r.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})
-
-	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: &log.Logger, NoColor: true}))
-
-	r.Use(authMiddleware(h.cfg.AdminToken))
 
 	r.Post("/notify", h.notify)
 

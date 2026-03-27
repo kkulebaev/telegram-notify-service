@@ -236,7 +236,7 @@ func TestNotifyRendersProvidedTimestampInUTC(t *testing.T) {
 		t.Fatalf("sender must be called")
 	}
 
-	if !bytes.Contains([]byte(sender.message), []byte("🕒 <i>2026-03-27 05:06 UTC</i>")) {
-		t.Fatalf("expected UTC timestamp, got: %s", sender.message)
+	if !bytes.Contains([]byte(sender.message), []byte("🕒 <i>27-03-2026 08:06 MSK</i>")) {
+		t.Fatalf("expected MSK timestamp, got: %s", sender.message)
 	}
 }

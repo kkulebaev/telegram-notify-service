@@ -28,19 +28,21 @@ func RenderMessage(p RenderParams) string {
 
 	if p.Source != nil {
 		lines = append(lines, "")
-		lines = append(lines, fmt.Sprintf("🔎 <i>source:</i> <code>%s</code>", html.EscapeString(*p.Source)))
+		lines = append(lines, fmt.Sprintf("🔎 <i>Источник:</i> <code>%s</code>", html.EscapeString(*p.Source)))
 	}
 
 	if len(p.Links) > 0 {
 		lines = append(lines, "")
-		lines = append(lines, "🔗 <b>Links</b>")
+		lines = append(lines, "🔗 <b>Ссылки</b>")
 		for _, l := range p.Links {
 			lines = append(lines, fmt.Sprintf("• <a href=\"%s\">%s</a>", html.EscapeString(l.URL), html.EscapeString(l.Label)))
 		}
 	}
 
+	msk := time.FixedZone("MSK", 3*60*60)
+
 	lines = append(lines, "")
-	lines = append(lines, fmt.Sprintf("🕒 <i>%s UTC</i>", p.Timestamp.UTC().Format("2006-01-02 15:04")))
+	lines = append(lines, fmt.Sprintf("🕒 <i>%s MSK</i>", p.Timestamp.In(msk).Format("02-01-2006 15:04")))
 
 	return strings.Join(lines, "\n")
 }

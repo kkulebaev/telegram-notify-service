@@ -13,6 +13,9 @@ type Config struct {
 	TelegramChatID   string `env:"TELEGRAM_CHAT_ID,required"`
 
 	AdminToken string `env:"ADMIN_TOKEN,required"`
+
+	VKConfirmationToken string `env:"VK_CONFIRMATION_TOKEN"`
+	VKSecret            string `env:"VK_SECRET"`
 }
 
 func Load() (Config, error) {

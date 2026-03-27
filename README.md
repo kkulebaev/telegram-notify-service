@@ -24,6 +24,15 @@ Tiny HTTP service (Go) to send notifications to Telegram.
 
 ## Endpoints
 
+### `POST /api/v1/webhooks/vk`
+
+VK Callback API webhook receiver.
+
+- If VK sends `{ "type": "confirmation" }` the service returns `VK_CONFIRMATION_TOKEN` as plain text.
+- For other events, it responds with plain text `ok` and triggers an internal call to `POST /api/v1/notify`.
+- Optional validation: if `VK_SECRET` is set, incoming payload must include the same `secret`.
+
+
 ### `GET /api/v1/healthz`
 
 Returns `200 ok`.

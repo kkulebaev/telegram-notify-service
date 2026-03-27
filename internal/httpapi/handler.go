@@ -42,6 +42,8 @@ func (h *Handler) Router() http.Handler {
 
 	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{Logger: &log.Logger, NoColor: true}))
 
+	r.Use(authMiddleware(h.cfg.AdminToken))
+
 	r.Post("/notify", h.notify)
 
 	return r

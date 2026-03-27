@@ -11,6 +11,8 @@ type Config struct {
 
 	TelegramBotToken string `env:"TELEGRAM_BOT_TOKEN,required"`
 	TelegramChatID   string `env:"TELEGRAM_CHAT_ID,required"`
+
+	AdminToken string `env:"ADMIN_TOKEN,required"`
 }
 
 func Load() (Config, error) {

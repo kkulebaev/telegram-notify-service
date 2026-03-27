@@ -11,6 +11,7 @@ A tiny HTTP service that sends notifications to Telegram.
 
 - `TELEGRAM_BOT_TOKEN` *(required)*
 - `TELEGRAM_CHAT_ID` *(required)*
+- `ADMIN_TOKEN` *(required)*
 - `PORT` *(optional, default: 8080)*
 
 ## Request example
@@ -18,6 +19,7 @@ A tiny HTTP service that sends notifications to Telegram.
 ```bash
 curl -X POST http://localhost:8080/notify \
   -H 'content-type: application/json' \
+  -H 'authorization: Bearer <ADMIN_TOKEN>' \
   -d '{
     "text": "Deploy failed on migrations",
     "title": "Prod deploy failed",

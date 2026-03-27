@@ -1,0 +1,8 @@
+.git
+**/*.md
+
+# Go
+**/*_test.go
+
+# OS
+.DS_Store
